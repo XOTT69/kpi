@@ -241,7 +241,7 @@ export default function Home() {
                 </button>
               </div>
               <div className="overflow-hidden rounded-2xl border border-[#e4e6ef]">
-                <div className="hidden grid-cols-[1fr_150px_110px_48px] gap-3 bg-[#f7f8fc] px-4 py-3 text-xs font-bold uppercase tracking-[.1em] text-slate-500 sm:grid">
+                <div className="hidden grid-cols-[minmax(240px,1fr)_110px_88px_40px] gap-3 bg-[#f7f8fc] px-4 py-2.5 text-xs font-bold uppercase tracking-[.1em] text-slate-500 sm:grid">
                   <span>Рівень</span>
                   <span>Коефіцієнт</span>
                   <span>Кількість</span>
@@ -254,7 +254,7 @@ export default function Home() {
                   return (
                     <div
                       key={row.id}
-                      className="grid gap-3 border-t border-[#edf0f5] p-4 sm:grid-cols-[1fr_150px_110px_48px] sm:items-center"
+                      className="grid gap-2.5 border-t border-[#edf0f5] p-3 sm:grid-cols-[minmax(240px,1fr)_110px_88px_40px] sm:items-center"
                     >
                       <label className="relative block">
                         <span className="mb-1 block text-xs font-semibold text-slate-500 sm:hidden">
@@ -268,17 +268,20 @@ export default function Home() {
                               coefficient: Number(e.target.value),
                             })
                           }
-                          className="h-11 w-full appearance-none rounded-xl border border-[#dde0ea] bg-[#fbfbfe] px-3 pr-9 text-sm font-semibold outline-none focus:border-[#6246d8]"
+                          className="h-10 w-full appearance-none rounded-xl border border-[#dde0ea] bg-[#fbfbfe] px-3 pr-9 text-sm font-semibold outline-none focus:border-[#6246d8]"
                         >
-                          {levels.map(([value, label, note]) => (
+                          {levels.map(([value, label]) => (
                             <option key={value} value={value}>
-                              {label} · {note}
+                              {label}
                             </option>
                           ))}
                         </select>
-                        <ChevronDown className="pointer-events-none absolute right-3 top-8 size-4 text-slate-400 sm:top-3.5" />
+                        <ChevronDown className="pointer-events-none absolute right-3 top-8 size-4 text-slate-400 sm:top-3" />
+                        <span className="mt-1 block text-xs leading-tight text-slate-500">
+                          {level[1]} · {level[2]}
+                        </span>
                       </label>
-                      <div className="rounded-xl bg-[#f5f3ff] px-3 py-3 text-sm font-semibold text-[#6246d8]">
+                      <div className="rounded-xl bg-[#f5f3ff] px-3 py-2.5 text-sm font-semibold text-[#6246d8]">
                         <span className="mr-1 text-xs text-slate-500 sm:hidden">
                           Коефіцієнт:{' '}
                         </span>
@@ -298,7 +301,7 @@ export default function Home() {
                             })
                           }
                           type="number"
-                          className="h-11 w-full rounded-xl border border-[#dde0ea] bg-[#fbfbfe] px-3 text-sm font-semibold outline-none focus:border-[#6246d8]"
+                          className="h-10 w-full rounded-xl border border-[#dde0ea] bg-[#fbfbfe] px-3 text-sm font-semibold outline-none focus:border-[#6246d8]"
                         />
                       </label>
                       <button
@@ -316,7 +319,7 @@ export default function Home() {
                           )
                         }
                         aria-label="Видалити помилку"
-                        className="grid size-11 place-items-center rounded-xl text-slate-400 transition hover:bg-red-50 hover:text-red-500"
+                        className="grid size-10 place-items-center rounded-xl text-slate-400 transition hover:bg-red-50 hover:text-red-500"
                       >
                         <Trash2 className="size-4" />
                       </button>
