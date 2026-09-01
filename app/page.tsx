@@ -21,17 +21,14 @@ type Channel = 'chat' | 'phone';
 type ErrorRow = { id: number; count: number; coefficient: number };
 
 const levels = [
-  [0.05, 'Незначна', 'еквівалент оцінки 95'],
-  [0.1, 'Помірна', 'еквівалент оцінки 90'],
-  [0.2, 'Суттєва', 'еквівалент оцінки 80'],
-  [0.7, 'Серйозна', 'еквівалент оцінки 30'],
-  [1, 'Критична', 'обнулений діалог'],
-  [1.5, 'Критична ×1,5', 'обнулений діалог'],
-  [2, 'Критична ×2', 'обнулений діалог'],
+  [0.05, 'Зауваження', 'оцінка 95'],
+  [0.2, 'Зауваження', 'оцінка 80'],
+  [0.7, 'Зауваження', 'оцінка 30'],
+  [1, 'Критична', 'коефіцієнт 1'],
+  [1.5, 'Критична', 'коефіцієнт 1,5'],
+  [2, 'Критична', 'коефіцієнт 2'],
 ] as const;
 const number = new Intl.NumberFormat('uk-UA', { maximumFractionDigits: 2 });
-const rating = (coefficient: number) =>
-  ({ 0.05: 95, 0.1: 90, 0.2: 80, 0.7: 30 })[coefficient] ?? 0;
 const inputClass =
   'mt-3 h-14 w-full rounded-xl border border-[#dde0ea] bg-[#fbfbfe] px-4 text-lg font-semibold outline-none transition focus:border-[#6246d8] focus:ring-4 focus:ring-[#e9e5ff]';
 
@@ -272,9 +269,9 @@ export default function Home() {
                           }
                           className="h-10 w-full appearance-none rounded-xl border border-[#dde0ea] bg-[#fbfbfe] px-3 pr-9 text-sm font-semibold outline-none focus:border-[#6246d8]"
                         >
-                          {levels.map(([value, label]) => (
+                          {levels.map(([value, label, description]) => (
                             <option key={value} value={value}>
-                              {label} · оцінка {rating(value)}
+                              {label} · {description}
                             </option>
                           ))}
                         </select>
