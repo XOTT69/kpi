@@ -30,6 +30,8 @@ const levels = [
   [2, 'Критична ×2', 'обнулений діалог'],
 ] as const;
 const number = new Intl.NumberFormat('uk-UA', { maximumFractionDigits: 2 });
+const rating = (coefficient: number) =>
+  ({ 0.05: 95, 0.1: 90, 0.2: 80, 0.7: 30 })[coefficient] ?? 0;
 const inputClass =
   'mt-3 h-14 w-full rounded-xl border border-[#dde0ea] bg-[#fbfbfe] px-4 text-lg font-semibold outline-none transition focus:border-[#6246d8] focus:ring-4 focus:ring-[#e9e5ff]';
 
@@ -272,7 +274,7 @@ export default function Home() {
                         >
                           {levels.map(([value, label]) => (
                             <option key={value} value={value}>
-                              {label}
+                              {label} · оцінка {rating(value)}
                             </option>
                           ))}
                         </select>
