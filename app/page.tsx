@@ -42,7 +42,7 @@ export default function Home() {
   const [kotoZnayka, setKotoZnayka] = useState(100);
   const [kotoBlitz, setKotoBlitz] = useState(100);
   const [kotoReels, setKotoReels] = useState(100);
-  const [usefulHours, setUsefulHours] = useState(160);
+  const [kpdValue, setKpdValue] = useState(20);
   const [errors, setErrors] = useState<ErrorRow[]>([
     { id: 1, count: 1, coefficient: 1 },
   ]);
@@ -59,7 +59,7 @@ export default function Home() {
     100,
     Math.max(0, kotoZnayka * 0.6 + kotoBlitz * 0.2 + kotoReels * 0.2),
   );
-  const kpd = usefulHours > 0 ? total / usefulHours : 0;
+  const kpd = Math.max(0, kpdValue);
   const kpdTarget = channel === 'chat' ? 20 : 10;
   const kpdScore = Math.min(100, (kpd / kpdTarget) * 100);
   const kpiWeights =
@@ -101,7 +101,7 @@ export default function Home() {
     setKotoZnayka(100);
     setKotoBlitz(100);
     setKotoReels(100);
-    setUsefulHours(160);
+    setKpdValue(20);
     setErrors([{ id: Date.now(), count: 1, coefficient: 1 }]);
   };
 
@@ -216,7 +216,10 @@ export default function Home() {
                   ).map(([value, Icon, label, note]) => (
                     <button
                       key={value}
-                      onClick={() => setChannel(value)}
+                      onClick={() => {
+                        setChannel(value);
+                        setKpdValue(value === 'chat' ? 20 : 10);
+                      }}
                       className={`flex flex-col items-start gap-2 rounded-xl p-4 text-left transition ${channel === value ? 'bg-white text-[#6246d8] shadow-sm ring-1 ring-[#dfdcf5]' : 'text-slate-500 hover:bg-white/60'}`}
                     >
                       <Icon className="size-5" />
@@ -541,13 +544,13 @@ export default function Home() {
                 />
               </label>
               <label className="block text-sm font-semibold sm:col-span-2 xl:col-span-3">
-                Корисний час, год
+                ККД, комунікацій/год
                 <input
-                  aria-label="Корисний час"
-                  value={usefulHours}
+                  aria-label="ККД"
+                  value={kpdValue}
                   min="0"
                   onChange={(e) =>
-                    setUsefulHours(Math.max(0, Number(e.target.value)))
+                    setKpdValue(Math.max(0, Number(e.target.value)))
                   }
                   type="number"
                   className="mt-2 h-11 w-full rounded-xl border border-[#dde0ea] bg-[#fbfbfe] px-3 text-sm font-semibold outline-none focus:border-[#6246d8]"
@@ -583,9 +586,8 @@ export default function Home() {
             </div>
           </div>
           <p className="mt-4 text-xs leading-relaxed text-slate-500">
-            AT обмежується 87,5%. ККД = проведені комунікації / корисний час;
-            100 балів — від {kpdTarget}{' '}
-            {channel === 'chat' ? 'чатів' : 'дзвінків'} на годину.
+            AT обмежується 87,5%. Введіть фактичний ККД; 100 балів — від{' '}
+            {kpdTarget} {channel === 'chat' ? 'чатів' : 'дзвінків'} на годину.
           </p>
         </section>
         <footer className="mt-7 flex items-center justify-center gap-2 text-sm text-slate-500">
