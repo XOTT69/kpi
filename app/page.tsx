@@ -36,6 +36,13 @@ export default function Home() {
   const [channel, setChannel] = useState<Channel>('chat');
   const [total, setTotal] = useState(2500);
   const [evaluated, setEvaluated] = useState(10);
+  const [activeTime, setActiveTime] = useState(87.5);
+  const [serviceLevel, setServiceLevel] = useState(92);
+  const [serviceLevelAsa, setServiceLevelAsa] = useState(93);
+  const [kotoZnayka, setKotoZnayka] = useState(100);
+  const [kotoBlitz, setKotoBlitz] = useState(100);
+  const [kotoReels, setKotoReels] = useState(100);
+  const [usefulHours, setUsefulHours] = useState(160);
   const [errors, setErrors] = useState<ErrorRow[]>([
     { id: 1, count: 1, coefficient: 1 },
   ]);
@@ -47,6 +54,33 @@ export default function Home() {
   const rawQuality =
     total > 0 ? (1 - (weighted * normalizer) / total) * 100 : 0;
   const quality = Math.max(0, rawQuality);
+  const activeTimeScore = Math.min(87.5, Math.max(0, activeTime));
+  const knowledge = Math.min(
+    100,
+    Math.max(0, kotoZnayka * 0.6 + kotoBlitz * 0.2 + kotoReels * 0.2),
+  );
+  const kpd = usefulHours > 0 ? total / usefulHours : 0;
+  const kpdTarget = channel === 'chat' ? 20 : 10;
+  const kpdScore = Math.min(100, (kpd / kpdTarget) * 100);
+  const kpiWeights =
+    channel === 'chat'
+      ? { at: 0.2, sl: 0.1, asa: 0.1, knowledge: 0.1, quality: 0.3, kpd: 0.2 }
+      : { at: 0.3, sl: 0.1, asa: 0.1, knowledge: 0.1, quality: 0.3, kpd: 0.1 };
+  const kpiScore =
+    activeTimeScore * kpiWeights.at +
+    serviceLevel * kpiWeights.sl +
+    serviceLevelAsa * kpiWeights.asa +
+    knowledge * kpiWeights.knowledge +
+    quality * kpiWeights.quality +
+    kpdScore * kpiWeights.kpd;
+  const kpiRows = [
+    { name: 'Active Time', value: activeTimeScore, weight: kpiWeights.at },
+    { name: 'SL', value: serviceLevel, weight: kpiWeights.sl },
+    { name: 'SL ASA', value: serviceLevelAsa, weight: kpiWeights.asa },
+    { name: 'Рівень знань', value: knowledge, weight: kpiWeights.knowledge },
+    { name: 'Оцінка якості', value: quality, weight: kpiWeights.quality },
+    { name: 'ККД', value: kpdScore, weight: kpiWeights.kpd },
+  ];
   const status =
     quality >= 95
       ? 'Відмінний результат'
@@ -61,6 +95,13 @@ export default function Home() {
     setChannel('chat');
     setTotal(2500);
     setEvaluated(10);
+    setActiveTime(87.5);
+    setServiceLevel(92);
+    setServiceLevelAsa(93);
+    setKotoZnayka(100);
+    setKotoBlitz(100);
+    setKotoReels(100);
+    setUsefulHours(160);
     setErrors([{ id: Date.now(), count: 1, coefficient: 1 }]);
   };
 
@@ -389,6 +430,163 @@ export default function Home() {
               </div>
             </div>
           </aside>
+        </section>
+        <section className="mt-7 rounded-[28px] border border-[#e1e3ef] bg-white p-5 shadow-[0_16px_36px_rgba(39,48,87,.06)] sm:p-7">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[.13em] text-[#6246d8]">
+                Крок 3 · рейтинг
+              </p>
+              <h2 className="mt-1 text-2xl font-semibold tracking-[-.03em]">
+                Підсумковий KPI
+              </h2>
+              <p className="mt-2 text-sm text-slate-500">
+                Якість підтягується з калькулятора вище, решту показників можна
+                ввести вручну.
+              </p>
+            </div>
+            <div className="rounded-2xl bg-[#17202f] px-5 py-3 text-right text-white">
+              <span className="block text-xs font-semibold uppercase tracking-[.1em] text-[#b9abff]">
+                Ваш бал
+              </span>
+              <output className="text-3xl font-semibold tracking-[-.05em]">
+                {number.format(kpiScore)}%
+              </output>
+            </div>
+          </div>
+          <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              <label className="block text-sm font-semibold">
+                Active Time, %
+                <input
+                  aria-label="Active Time"
+                  value={activeTime}
+                  min="0"
+                  max="100"
+                  onChange={(e) =>
+                    setActiveTime(Math.max(0, Number(e.target.value)))
+                  }
+                  type="number"
+                  className="mt-2 h-11 w-full rounded-xl border border-[#dde0ea] bg-[#fbfbfe] px-3 text-sm font-semibold outline-none focus:border-[#6246d8]"
+                />
+              </label>
+              <label className="block text-sm font-semibold">
+                SL, %
+                <input
+                  aria-label="SL"
+                  value={serviceLevel}
+                  min="0"
+                  max="100"
+                  onChange={(e) =>
+                    setServiceLevel(Math.max(0, Number(e.target.value)))
+                  }
+                  type="number"
+                  className="mt-2 h-11 w-full rounded-xl border border-[#dde0ea] bg-[#fbfbfe] px-3 text-sm font-semibold outline-none focus:border-[#6246d8]"
+                />
+              </label>
+              <label className="block text-sm font-semibold">
+                SL ASA, %
+                <input
+                  aria-label="SL ASA"
+                  value={serviceLevelAsa}
+                  min="0"
+                  max="100"
+                  onChange={(e) =>
+                    setServiceLevelAsa(Math.max(0, Number(e.target.value)))
+                  }
+                  type="number"
+                  className="mt-2 h-11 w-full rounded-xl border border-[#dde0ea] bg-[#fbfbfe] px-3 text-sm font-semibold outline-none focus:border-[#6246d8]"
+                />
+              </label>
+              <label className="block text-sm font-semibold">
+                Кото-знайка, %
+                <input
+                  aria-label="Кото-знайка"
+                  value={kotoZnayka}
+                  min="0"
+                  max="100"
+                  onChange={(e) =>
+                    setKotoZnayka(Math.max(0, Number(e.target.value)))
+                  }
+                  type="number"
+                  className="mt-2 h-11 w-full rounded-xl border border-[#dde0ea] bg-[#fbfbfe] px-3 text-sm font-semibold outline-none focus:border-[#6246d8]"
+                />
+              </label>
+              <label className="block text-sm font-semibold">
+                Кото-бліц, %
+                <input
+                  aria-label="Кото-бліц"
+                  value={kotoBlitz}
+                  min="0"
+                  max="100"
+                  onChange={(e) =>
+                    setKotoBlitz(Math.max(0, Number(e.target.value)))
+                  }
+                  type="number"
+                  className="mt-2 h-11 w-full rounded-xl border border-[#dde0ea] bg-[#fbfbfe] px-3 text-sm font-semibold outline-none focus:border-[#6246d8]"
+                />
+              </label>
+              <label className="block text-sm font-semibold">
+                Кото-reels, %
+                <input
+                  aria-label="Кото-reels"
+                  value={kotoReels}
+                  min="0"
+                  max="100"
+                  onChange={(e) =>
+                    setKotoReels(Math.max(0, Number(e.target.value)))
+                  }
+                  type="number"
+                  className="mt-2 h-11 w-full rounded-xl border border-[#dde0ea] bg-[#fbfbfe] px-3 text-sm font-semibold outline-none focus:border-[#6246d8]"
+                />
+              </label>
+              <label className="block text-sm font-semibold sm:col-span-2 xl:col-span-3">
+                Корисний час, год
+                <input
+                  aria-label="Корисний час"
+                  value={usefulHours}
+                  min="0"
+                  onChange={(e) =>
+                    setUsefulHours(Math.max(0, Number(e.target.value)))
+                  }
+                  type="number"
+                  className="mt-2 h-11 w-full rounded-xl border border-[#dde0ea] bg-[#fbfbfe] px-3 text-sm font-semibold outline-none focus:border-[#6246d8]"
+                />
+              </label>
+            </div>
+            <div className="overflow-hidden rounded-2xl border border-[#e4e6ef]">
+              <div className="grid grid-cols-[1fr_76px_56px] gap-2 bg-[#f7f8fc] px-4 py-2.5 text-xs font-bold uppercase tracking-[.08em] text-slate-500">
+                <span>Показник</span>
+                <span>Бал</span>
+                <span>Вага</span>
+              </div>
+              {kpiRows.map((row) => (
+                <div
+                  key={row.name}
+                  className="grid grid-cols-[1fr_76px_56px] gap-2 border-t border-[#edf0f5] px-4 py-2.5 text-sm"
+                >
+                  <span className="font-medium text-slate-700">{row.name}</span>
+                  <b>{number.format(row.value)}</b>
+                  <span className="text-slate-500">
+                    {row.weight.toFixed(2).replace('.', ',')}
+                  </span>
+                </div>
+              ))}
+              <div className="grid grid-cols-[1fr_auto] gap-2 border-t border-[#dcd8fa] bg-[#f5f3ff] px-4 py-3 text-sm">
+                <span className="font-bold text-[#503bb9]">
+                  Підсумковий бал
+                </span>
+                <b className="text-lg text-[#503bb9]">
+                  {number.format(kpiScore)}
+                </b>
+              </div>
+            </div>
+          </div>
+          <p className="mt-4 text-xs leading-relaxed text-slate-500">
+            AT обмежується 87,5%. ККД = проведені комунікації / корисний час;
+            100 балів — від {kpdTarget}{' '}
+            {channel === 'chat' ? 'чатів' : 'дзвінків'} на годину.
+          </p>
         </section>
         <footer className="mt-7 flex items-center justify-center gap-2 text-sm text-slate-500">
           Контроль якості починається з прозорих даних{' '}
